@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -22,17 +23,25 @@ public class Post implements Serializable {
     private String title;
     private String content;
     @Column(name = "post_status")
-    @Enumerated(EnumType.ORDINAL) // Use this otherwise to store it as integer
-                    PostStatus postStatus;
-                    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType. REFRESH)
-                    @JoinColumn(name = "blog_id")
-                    @ToString.Exclude
-                    private Blog blog;
-                    @JsonIgnore
-                    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-                    @JoinColumn(name = "author_id")
-                    @ToString.Exclude
-                    private User user;
+    @Enumerated(EnumType.STRING)
+    PostStatus postStatus;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "blog_id")
+    @ToString.Exclude
+    private Blog blog;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "author_id")
+    @ToString.Exclude
+    private User user;
+    @JsonIgnore
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "post_files", joinColumns = {
+            @JoinColumn(name = "post_id", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "file_id", referencedColumnName = "id")})
+    private Set<File> files;
 
     @Override
     public boolean equals(Object o) {

@@ -29,10 +29,17 @@ public class User implements Serializable {
     private String password;
     private String email;
     private Boolean isActive;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType
-            .ALL, mappedBy = "user", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE, CascadeType.REMOVE},
+            mappedBy = "user",
+            orphanRemoval = true)
     @ToString.Exclude
     private Set<Post> posts;
+    private Integer addressId;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "addressId", insertable = false, updatable = false)
+    private Address address;
 
     @Override
     public boolean equals(Object o) {
